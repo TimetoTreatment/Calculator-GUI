@@ -3,11 +3,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class JavaHW4 extends JFrame {
-
-	int mWidth = 480;
-	int mHeight = 640;
 
 	Integer mLastNum = 0;
 
@@ -18,14 +16,6 @@ public class JavaHW4 extends JFrame {
 
 			setBackground(Color.cyan);
 			add(label);
-		}
-
-		@Override
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-
-			g.setColor(Color.red);
-			// g.drawRect(getX(), getY(), WIDTH, HEIGHT);
 
 		}
 	}
@@ -34,7 +24,7 @@ public class JavaHW4 extends JFrame {
 
 		Numpad() {
 
-			setLayout(new GridLayout(4, 4));
+			setLayout(new GridLayout(4, 4, 2, 2));
 
 			JButton[] numbers = new JButton[10];
 
@@ -46,54 +36,70 @@ public class JavaHW4 extends JFrame {
 			for (int i = 0; i < 10; i++)
 				add(numbers[i]);
 		}
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+
+			Graphics2D g2 = (Graphics2D) g;
+
+			g2.setStroke(new BasicStroke(1));
+
+		}
 	}
 
-	class Calculator extends JPanel {
+	class MainPenel extends JPanel {
 
-		Calculator() {
+		JPanel display;
+		JPanel numpad;
+
+		MainPenel(Container contentPane) {
+
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			setBackground(Color.darkGray);
 
-			JPanel display = new Display();
-			JPanel numpad = new Numpad();
+			display = new Display();
+			numpad = new Numpad();
 
-			display.setMaximumSize(new Dimension(mWidth, mHeight / 3));
-			numpad.setMaximumSize(new Dimension(mWidth, mHeight * 2 / 3));
+			display.setMaximumSize(new Dimension(480, 640 / 3));
+			numpad.setMaximumSize(new Dimension(480, 640 * 2 / 3));
 
 			addComponentListener(new ComponentAdapter() {
+
 				@Override
 				public void componentResized(ComponentEvent e) {
-					mHeight = e.getComponent().getHeight();
-					mWidth = e.getComponent().getWidth();
 
-					System.out.println("height : " + mHeight);
-					System.out.println("width : " + mWidth);
+					int mCalWidth = e.getComponent().getWidth();
+					int mCalHeight = e.getComponent().getHeight();
+					int mContentPaneWidth = contentPane.getWidth();
+					int mContentPaneHeight = contentPane.getHeight();
 
-					if (mHeight >= mWidth * 4 / 3) {
+					if (mCalHeight >= mCalWidth * 4 / 3)
+						mCalHeight = mCalWidth * 4 / 3;
+					else
+						mCalWidth = mCalHeight * 3 / 4;
 
-						mHeight = mWidth * 4 / 3;
+					display.setMaximumSize(new Dimension(mCalWidth, mCalHeight / 3));
+					numpad.setMaximumSize(new Dimension(mCalWidth, mCalHeight * 2 / 3));
 
-						display.setMaximumSize(new Dimension(mWidth, mHeight / 3));
-						numpad.setMaximumSize(new Dimension(mWidth, mHeight * 2 / 3));
-					} else {
-
-						mWidth = mHeight * 3 / 4;
-
-						display.setMaximumSize(new Dimension(mWidth, mHeight / 3));
-						numpad.setMaximumSize(new Dimension(mWidth, mHeight * 2 / 3));
-					}
+					setBorder(new EmptyBorder((contentPane.getHeight() - mCalHeight) / 2 + 3, 3, 3, 3));
 				}
 			});
 
 			add(display);
 			add(numpad);
 		}
-		
-		@Override
-		public void paintComponent(Graphics g)
-		{
 
-			
+		@Override
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+
+			Graphics2D draw = (Graphics2D) g;
+
+			draw.setColor(Color.red);
+			draw.setStroke(new BasicStroke(5));
+			draw.drawRect(display.getX(), display.getY(), display.getWidth(), display.getHeight() + numpad.getHeight());
 		}
+
 	}
 
 	JavaHW4() {
@@ -101,10 +107,8 @@ public class JavaHW4 extends JFrame {
 		setTitle("Calculator");
 		setSize(480, 640);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		setBackground(Color.darkGray);
 
-		add(new Calculator());
+		add(new MainPenel(getContentPane()));
 
 		setLocationRelativeTo(null);
 		setVisible(true);
