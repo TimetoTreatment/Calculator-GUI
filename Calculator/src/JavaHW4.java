@@ -9,7 +9,6 @@ public class JavaHW4 extends JFrame {
 		clear, add, sub, result
 	}
 
-	Operation mOperation = Operation.clear;
 	private int mLastNum = 0;
 	private int mCurrentNum = 0;
 	JLabel mNumberLabel = new JLabel(Integer.toString(mLastNum), SwingConstants.RIGHT);
@@ -24,8 +23,6 @@ public class JavaHW4 extends JFrame {
 			addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentResized(ComponentEvent e) {
-
-					System.out.println(e.getComponent().getHeight());
 
 					int displayHeight = e.getComponent().getHeight();
 
@@ -42,8 +39,8 @@ public class JavaHW4 extends JFrame {
 		public void paintComponent(Graphics g) {
 
 			super.paintComponent(g);
-
 			Graphics2D g2 = (Graphics2D) g;
+
 			int srcX = mNumberLabel.getX();
 			int srcY = mNumberLabel.getY();
 			int dstX = srcX + mNumberLabel.getWidth();
@@ -56,14 +53,13 @@ public class JavaHW4 extends JFrame {
 
 	class Calculator extends JPanel {
 
+		Operation mOperation = Operation.clear;
+
 		Calculator() {
 
 			setLayout(new GridLayout(4, 4, 4, 4));
 			setBackground(new Color(210, 210, 210));
-
-			Border panelBorder = new MatteBorder(0, 2, 2, 2, Color.black);
-
-			setBorder(panelBorder);
+			setBorder(new MatteBorder(0, 2, 2, 2, Color.black));
 
 			JButton[] allButtons = new JButton[16];
 			JButton[] numbers = new JButton[10];
@@ -179,9 +175,8 @@ public class JavaHW4 extends JFrame {
 				}
 			});
 
-			for (var button : allButtons) {
+			for (var button : allButtons)
 				add(button);
-			}
 		}
 	}
 
@@ -193,10 +188,10 @@ public class JavaHW4 extends JFrame {
 			setBackground(Color.darkGray);
 
 			Display display = new Display();
-			Calculator numpad = new Calculator();
+			Calculator calculator = new Calculator();
 
 			display.setMaximumSize(new Dimension(480, 640 / 3));
-			numpad.setMaximumSize(new Dimension(480, 640 * 2 / 3));
+			calculator.setMaximumSize(new Dimension(480, 640 * 2 / 3));
 
 			addComponentListener(new ComponentAdapter() {
 				@Override
@@ -211,14 +206,14 @@ public class JavaHW4 extends JFrame {
 						calWidth = calHeight * 3 / 4;
 
 					display.setMaximumSize(new Dimension(calWidth, calHeight / 3));
-					numpad.setMaximumSize(new Dimension(calWidth, calHeight * 2 / 3));
+					calculator.setMaximumSize(new Dimension(calWidth, calHeight * 2 / 3));
 
 					setBorder(new EmptyBorder((contentPane.getHeight() - calHeight) / 2 + 3, 0, 0, 0));
 				}
 			});
 
 			add(display);
-			add(numpad);
+			add(calculator);
 		}
 	}
 
