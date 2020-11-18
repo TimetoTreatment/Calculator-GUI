@@ -9,11 +9,9 @@ public class JavaHW4 extends JFrame {
 		clear, add, sub, result
 	}
 
-	private int mLastNum = 0;
-	private int mCurrentNum = 0;
-	JLabel mNumberLabel = new JLabel(Integer.toString(mLastNum), SwingConstants.RIGHT);
-
 	class Display extends JPanel {
+
+		private JLabel mLabel = new JLabel("0", SwingConstants.RIGHT);
 
 		Display() {
 
@@ -26,13 +24,17 @@ public class JavaHW4 extends JFrame {
 
 					int displayHeight = e.getComponent().getHeight();
 
-					mNumberLabel.setFont(new Font(Font.DIALOG, Font.BOLD, displayHeight * 2 / 5));
-					mNumberLabel.setBorder(new CompoundBorder(new LineBorder(Color.darkGray, displayHeight / 10),
+					mLabel.setFont(new Font(Font.DIALOG, Font.BOLD, displayHeight * 2 / 5));
+					mLabel.setBorder(new CompoundBorder(new LineBorder(Color.darkGray, displayHeight / 10),
 							new EmptyBorder(0, 0, 0, displayHeight / 8)));
 				}
 			});
 
-			add(mNumberLabel, BorderLayout.CENTER);
+			add(mLabel, BorderLayout.CENTER);
+		}
+		
+		public void SetText(String str) {
+			mLabel.setText(str);
 		}
 
 		@Override
@@ -41,157 +43,96 @@ public class JavaHW4 extends JFrame {
 			super.paintComponent(g);
 			Graphics2D g2 = (Graphics2D) g;
 
-			int srcX = mNumberLabel.getX();
-			int srcY = mNumberLabel.getY();
-			int dstX = srcX + mNumberLabel.getWidth();
-			int dstY = srcY + mNumberLabel.getHeight();
+			int srcX = mLabel.getX();
+			int srcY = mLabel.getY();
+			int dstX = srcX + mLabel.getWidth();
+			int dstY = srcY + mLabel.getHeight();
 
 			g2.setPaint(new GradientPaint(srcX, srcY, new Color(100, 100, 100), dstX, dstY, Color.white));
 			g2.fillRect(srcX, srcY, dstX - srcX, dstY - srcY);
 		}
 	}
 
-	class Calculator extends JPanel {
+	class Numpad extends JPanel {
 
-		Operation mOperation = Operation.clear;
+		JButton[] mAllButtons = new JButton[16];
+		JButton[] mNumbers = new JButton[10];
+		JButton[] mOperations = new JButton[4];
+		JButton mClear = new JButton("C");
+		JButton mAdd = new JButton("+");
+		JButton mSub = new JButton("-");
+		JButton mResult = new JButton("=");
+		JButton mDummyButton1 = new JButton();
+		JButton mDummyButton2 = new JButton();
 
-		Calculator() {
+		Numpad() {
 
 			setLayout(new GridLayout(4, 4, 4, 4));
 			setBackground(new Color(210, 210, 210));
 			setBorder(new MatteBorder(0, 2, 2, 2, Color.black));
 
-			JButton[] allButtons = new JButton[16];
-			JButton[] numbers = new JButton[10];
-			JButton[] operations = new JButton[4];
-			JButton clear = new JButton("C");
-			JButton add = new JButton("+");
-			JButton sub = new JButton("-");
-			JButton result = new JButton("=");
-			JButton dummyButton1 = new JButton();
-			JButton dummyButton2 = new JButton();
-
 			for (int i = 0; i < 10; i++)
-				numbers[i] = new JButton(Integer.toString(i));
+				mNumbers[i] = new JButton(Integer.toString(i));
 
-			allButtons[0] = numbers[7];
-			allButtons[1] = numbers[8];
-			allButtons[2] = numbers[9];
-			allButtons[3] = operations[0] = clear;
-			allButtons[4] = numbers[4];
-			allButtons[5] = numbers[5];
-			allButtons[6] = numbers[6];
-			allButtons[7] = operations[1] = add;
-			allButtons[8] = numbers[1];
-			allButtons[9] = numbers[2];
-			allButtons[10] = numbers[3];
-			allButtons[11] = operations[2] = sub;
-			allButtons[12] = numbers[0];
-			allButtons[13] = dummyButton1;
-			allButtons[14] = dummyButton2;
-			allButtons[15] = operations[3] = result;
+			mAllButtons[0] = mNumbers[7];
+			mAllButtons[1] = mNumbers[8];
+			mAllButtons[2] = mNumbers[9];
+			mAllButtons[3] = mOperations[0] = mClear;
+			mAllButtons[4] = mNumbers[4];
+			mAllButtons[5] = mNumbers[5];
+			mAllButtons[6] = mNumbers[6];
+			mAllButtons[7] = mOperations[1] = mAdd;
+			mAllButtons[8] = mNumbers[1];
+			mAllButtons[9] = mNumbers[2];
+			mAllButtons[10] = mNumbers[3];
+			mAllButtons[11] = mOperations[2] = mSub;
+			mAllButtons[12] = mNumbers[0];
+			mAllButtons[13] = mDummyButton1;
+			mAllButtons[14] = mDummyButton2;
+			mAllButtons[15] = mOperations[3] = mResult;
 
-			for (var button : allButtons) {
-
+			for (var button : mAllButtons) {
 				button.setBorder(new EmptyBorder(0, 0, 0, 0));
 				button.setForeground(Color.darkGray);
 				button.setBackground(new Color(250, 250, 250));
 				button.setFont(new Font(Font.DIALOG, Font.BOLD, 32));
 				button.setFocusPainted(false);
 			}
-
-			clear.setForeground(new Color(180, 80, 40));
-
-			for (var button : operations)
+			
+			for (var button : mOperations)
 				button.setBackground(new Color(230, 230, 230));
 
-			for (var button : numbers) {
-				button.addActionListener((e) -> {
-
-					if (mOperation == Operation.result) {
-						mCurrentNum = Integer.parseInt(((JButton) e.getSource()).getText());
-						mNumberLabel.setText(Integer.toString(mCurrentNum));
-						mLastNum = 0;
-						mOperation = Operation.add;
-					} else if (mCurrentNum < 1000000) {
-						mCurrentNum *= 10;
-						mCurrentNum += Integer.parseInt(((JButton) e.getSource()).getText());
-						mNumberLabel.setText(Integer.toString(mCurrentNum));
-					}
-				});
-			}
-
-			clear.addActionListener((e) -> {
-
-				mCurrentNum = 0;
-				mLastNum = 0;
-				mNumberLabel.setText(Integer.toString(mLastNum));
-				mOperation = Operation.clear;
-			});
-
-			add.addActionListener((e) -> {
-				if (mOperation == Operation.sub)
-					mLastNum -= mCurrentNum;
-				else
-					mLastNum += mCurrentNum;
-
-				mNumberLabel.setText(Integer.toString(mLastNum));
-				mCurrentNum = 0;
-				mOperation = Operation.add;
-			});
-
-			sub.addActionListener((e) -> {
-
-				if (mOperation == Operation.sub)
-					mLastNum -= mCurrentNum;
-				else
-					mLastNum += mCurrentNum;
-
-				mNumberLabel.setText(Integer.toString(mLastNum));
-				mCurrentNum = 0;
-				mOperation = Operation.sub;
-			});
-
-			result.addActionListener((e) -> {
-
-				if (mOperation == Operation.sub)
-					mLastNum -= mCurrentNum;
-				else
-					mLastNum += mCurrentNum;
-
-				mNumberLabel.setText(Integer.toString(mLastNum));
-				mCurrentNum = 0;
-				mOperation = Operation.result;
-			});
+			mClear.setForeground(new Color(180, 80, 40));
 
 			addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentResized(ComponentEvent e) {
-
-					int numpadHeight = e.getComponent().getHeight();
-
-					for (var button : allButtons)
-						button.setFont(new Font(Font.DIALOG, Font.BOLD, numpadHeight / 10));
+					for (var button : mAllButtons)
+						button.setFont(new Font(Font.DIALOG, Font.BOLD, e.getComponent().getHeight() / 10));
 				}
 			});
 
-			for (var button : allButtons)
+			for (var button : mAllButtons)
 				add(button);
 		}
 	}
 
-	class MainPanel extends JPanel {
+	class Calculator extends JPanel {
 
-		MainPanel(Container contentPane) {
+		private int mLastNum = 0;
+		private int mCurrentNum = 0;
+		String mOperation = "clear";
+
+		Calculator(Container contentPane) {
 
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			setBackground(Color.darkGray);
 
 			Display display = new Display();
-			Calculator calculator = new Calculator();
+			Numpad numpad = new Numpad();
 
 			display.setMaximumSize(new Dimension(480, 640 / 3));
-			calculator.setMaximumSize(new Dimension(480, 640 * 2 / 3));
+			numpad.setMaximumSize(new Dimension(480, 640 * 2 / 3));
 
 			addComponentListener(new ComponentAdapter() {
 				@Override
@@ -206,14 +147,74 @@ public class JavaHW4 extends JFrame {
 						calWidth = calHeight * 3 / 4;
 
 					display.setMaximumSize(new Dimension(calWidth, calHeight / 3));
-					calculator.setMaximumSize(new Dimension(calWidth, calHeight * 2 / 3));
+					numpad.setMaximumSize(new Dimension(calWidth, calHeight * 2 / 3));
 
 					setBorder(new EmptyBorder((contentPane.getHeight() - calHeight) / 2 + 3, 0, 0, 0));
 				}
 			});
 
+			for (var button : numpad.mNumbers) {
+				button.addActionListener((e) -> {
+
+					if (mOperation == "result") {
+						mCurrentNum = Integer.parseInt(((JButton) e.getSource()).getText());
+						display.SetText(Integer.toString(mCurrentNum));
+						mLastNum = 0;
+						mOperation = "clear";
+					} else if (mCurrentNum < 1000000) {
+						mCurrentNum *= 10;
+						mCurrentNum += Integer.parseInt(((JButton) e.getSource()).getText());
+						display.SetText(Integer.toString(mCurrentNum));
+					}
+				});
+			}
+
+			numpad.mClear.addActionListener((e) -> {
+
+				mCurrentNum = 0;
+				mLastNum = 0;
+				mOperation = "clear";
+				display.SetText(Integer.toString(mLastNum));
+			});
+
+			numpad.mAdd.addActionListener((e) -> {
+				
+				if (mOperation == "sub")
+					mLastNum -= mCurrentNum;
+				else
+					mLastNum += mCurrentNum;
+
+				mCurrentNum = 0;
+				mOperation = "add";
+				display.SetText(Integer.toString(mLastNum));
+			});
+
+			numpad.mSub.addActionListener((e) -> {
+
+				if (mOperation == "sub")
+					mLastNum -= mCurrentNum;
+				else
+					mLastNum += mCurrentNum;
+
+				mCurrentNum = 0;
+				mOperation = "sub";
+				display.SetText(Integer.toString(mLastNum));
+			});
+
+			numpad.mResult.addActionListener((e) -> {
+
+				if (mOperation == "sub")
+					mLastNum -= mCurrentNum;
+				else
+					mLastNum += mCurrentNum;
+
+				mCurrentNum = 0;
+				mOperation = "result";
+				display.SetText(Integer.toString(mLastNum));
+			});
+
 			add(display);
-			add(calculator);
+			add(numpad);
 		}
 	}
 
@@ -222,13 +223,12 @@ public class JavaHW4 extends JFrame {
 		setTitle("Calculator");
 		setSize(600, 640);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-		add(new MainPanel(getContentPane()));
-
+		add(new Calculator(getContentPane()));
 		setVisible(true);
 	}
 
 	public static void main(String[] args) {
+
 		new JavaHW4();
 	}
 }
