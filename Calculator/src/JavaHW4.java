@@ -5,10 +5,6 @@ import javax.swing.border.*;
 
 public class JavaHW4 extends JFrame {
 
-	enum Operation {
-		clear, add, sub, result
-	}
-
 	class Display extends JPanel {
 
 		private JLabel mLabel = new JLabel("0", SwingConstants.RIGHT);
